@@ -12,6 +12,7 @@
 int suma1(int v[], int n);
 int suma2(int v[], int n);
 void test1();
+void test2();
 void imprimirVector(int v[], int n);
 void inicializar_semilla();
 void aleatorio(int v [], int n);
@@ -19,7 +20,7 @@ void aleatorio(int v [], int n);
 int main(void) {
     inicializar_semilla();
     test1();
-    //test2();
+    test2();
     return 0;
 }
 
@@ -57,29 +58,32 @@ int suma2(int v[], int n) {
 }
 
 void imprimirVector(int v[], int n) {
-    for(int i=0; i > n; i++){
-        printf("%d",v[i]);
+    int i;
+
+    printf("[");
+    for(i=0; i < n; i++){
+        printf("%d, ",v[i]);
     }
+    printf("] ");
 }
 
 void test1() {
-    int v1[] = {-9, 2, -5, -4, -6};
-    int v2[] = {4, 0, 9, 2, 5};
-    int v3[] = {-2, -1, -9, -7, -1};
-    int v4[] = {9, -2, 1, -7, -8};
-    int v5[] = {15, -2, -5, -4, 16};
-    int v6[] = {7, -5, 6, 7, -7};
+    int v[] = {{-9, 2, -5, -4, 6}, {4, 0, 9, 2, 5}, 
+    {-2, -1, -9, -7, -1}, {9, -2, 1, -7, -8}, {15, -2, -5, -4, 16}, {7, -5, 6, 7, -7}};
+    int i;
 
-    printf("v1: %i\n", suma1(v1, 5));
-    printf("v2: %i\n", suma1(v2, 5));
-    printf("v3: %i\n", suma1(v3, 5));
-    printf("v4: %i\n", suma1(v4, 5));
-    printf("v5: %i\n", suma1(v5, 5));
-    printf("v6: %i\n", suma1(v6, 5));
+    for(i = 0; i < 6; i++) {
+        
+    }
 }
 
 void test2() {
-    
+    int v7[9];int v8[9]; int v9[9]; int v10[9];
+    aleatorio(v7,9);
+    aleatorio(v8,9);
+    aleatorio(v9,9);
+    aleatorio(v10,9);
+    imprimirVector(v7,9);
 
 }
 
