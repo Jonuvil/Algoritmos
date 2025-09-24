@@ -62,18 +62,24 @@ void imprimirVector(int v[], int n) {
 
     printf("[");
     for(i=0; i < n; i++){
-        printf("%d, ",v[i]);
+        printf(" %i ",v[i]);
     }
     printf("] ");
 }
 
 void test1() {
-    int v[] = {{-9, 2, -5, -4, 6}, {4, 0, 9, 2, 5}, 
-    {-2, -1, -9, -7, -1}, {9, -2, 1, -7, -8}, {15, -2, -5, -4, 16}, {7, -5, 6, 7, -7}};
+    int v0[] = {-9, 2, -5, -4, 6};
+    int v1[] = {4, 0, 9, 2, 5};
+    int v2[] = {-2, -1, -9, -7, -1};
+    int v3[] = {9, -2, 1, -7, -8};
+    int v4[] = {15, -2, -5, -4, 16};
+    int v5[] = {7, -5, 6, 7, -7};
+    int* v[] = {v0, v1, v2, v3, v4, v5};
     int i;
 
     for(i = 0; i < 6; i++) {
-        
+        imprimirVector(v[i], 5);
+        printf("    %i      %i\n", suma1(v[i], 5), suma2(v[i], 5));
     }
 }
 
