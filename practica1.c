@@ -117,7 +117,6 @@ void test2() {
 
 double getDif1(int v[], int n) {
     double inicio= microsegundos();
-    int suma_res = suma1(v, n);
     double fin = microsegundos();
     double dif=fin - inicio;
     int repeticiones=100;
@@ -126,7 +125,7 @@ double getDif1(int v[], int n) {
     if (dif<=500){
         inicio= microsegundos();
         for (i=0;i<repeticiones;i++){
-            suma_res = suma1(v, n);
+            suma1(v, n);
         }
         fin = microsegundos();
         dif=(fin - inicio)/repeticiones;
@@ -136,7 +135,7 @@ double getDif1(int v[], int n) {
 
 double getDif2(int v[], int n) {
     double inicio= microsegundos();
-    int suma_res = suma2(v, n);
+    
     double fin = microsegundos();
     double dif=fin - inicio;
     int repeticiones=100;
@@ -145,7 +144,7 @@ double getDif2(int v[], int n) {
     if (dif<=500){
         inicio= microsegundos();
         for (i=0;i<repeticiones;i++){
-            suma_res = suma2(v, n);
+            suma2(v, n);
         }
         fin = microsegundos();
         dif=(fin - inicio)/repeticiones;
@@ -165,20 +164,20 @@ void test3() {
         int v[i];
         aleatorio(v,i);
         dif1= getDif1(v,i);
-        printf("%s%-15i%-15f%-15f%-15.8f%-15f\n",
+        printf("%s%-15i%-15f%-15f%-15.8f%-15.8f\n",
         (dif1 > 500 ? " ":"@"),i,dif1,dif1/pow(i,1.8),
             dif1/(pow(i,2)),dif1/(pow(i,2.2)));
     }
 
 }void test4() {
-    int *v;
+    
     double dif2;
 
     printf("\nSuma SubMax 2\n");
     printf("%-15s%-15s%-15s%-15s%-15s\n","n","t(n)",
         "t(n)/n^0.8","t(n)/n","t(n)/n*log(n)");
     for (int i=310000;i<=10000000;i=i*2){
-        *v=malloc(sizeof(int) * i);
+        int *v=malloc(sizeof(int) * i);
         aleatorio(v,i);
         dif2=getDif2(v,i);
         printf("%s%-15i%-15f%-15f%-15f%-15f\n",
