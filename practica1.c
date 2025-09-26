@@ -148,24 +148,28 @@ double getDif2(int v[], int n) {
 
 void test3() {
     printf("\nSuma SubMax 1\n");
-    printf("%-15s%-15s%-15s%-15s%-15s\n","n","t(n)","t(n)/n^1.8","t(n)/n^2","t(n)/n^2.2");
+    printf("%-15s%-15s%-15s%-15s%-15s\n"
+        ,"n","t(n)","t(n)/n^1.8","t(n)/n^2","t(n)/n^2.2");
     for (int i=500;i<=32000;i=i*2){
         int v[i];
         aleatorio(v,i);
         double dif1= getDif1(v,i);
-        printf("%-15i%-15f%-15f%-15f%-15f\n",i, dif1, dif1/pow(i,1.8), dif1 / (pow(i, 2)), dif1 / (pow(i, 2.2)));
+        printf("%s%-15i%-15f%-15f%-15.8f%-15f\n",
+        (dif1 > 500 ? " ":"@"),i,dif1,dif1/pow(i,1.8),dif1/(pow(i,2)),dif1/(pow(i,2.2)));
         
     }
 
 }void test4() {
     printf("\nSuma SubMax 2\n");
     printf("%-15s%-15s%-15s%-15s%-15s\n","n","t(n)","t(n)/n^0.8","t(n)/n","t(n)/n*log(n)");
-    for (int i=200000;i<=512000;i=i*1.25){
-        int v[i];
+    for (int i=310000;i<=10000000;i=i*2){
+        int *v=malloc(sizeof(int) * i);
         aleatorio(v,i);
-        double dif2= getDif2(v,i);
-        printf("%-15i%-15f%-15f%-15f%-15f\n",i, dif2, dif2/pow(i,0.8), dif2 / i, dif2 / i*log(i));
-        
+        double dif2=getDif2(v,i);
+        printf("%s%-15i%-15f%-15f%-15f%-15f\n",
+        (dif2 > 500 ? " ":"@"),i, dif2, dif2/pow(i,0.8), dif2 / i, dif2 / i*log(i));
+    
+        free(v);  
     }
 }
 
