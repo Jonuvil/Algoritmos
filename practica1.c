@@ -88,10 +88,10 @@ void test1() {
     int* v[] = {v0, v1, v2, v3, v4, v5};
     int i;    
     printf("Test 1 \n");
-    printf("%-17s%-15s%-15s\n","Vector","Suma1","Suma2");
+    printf("%-17s%9s%9s\n","Vector","Suma1","Suma2");
     for(i = 0; i < 6; i++) {
         imprimirVector(v[i], 5);
-        printf("%5i%5i\n", suma1(v[i], 5), suma2(v[i], 5));
+        printf("%5i%8i\n", suma1(v[i], 5), suma2(v[i], 5));
     }
 }
 
