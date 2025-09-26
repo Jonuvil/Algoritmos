@@ -156,19 +156,22 @@ void test3() {
         aleatorio(v,i);
         double dif1= getDif1(v,i);
         printf("%s%-15i%-15f%-15f%-15.8f%-15f\n",
-        (dif1 > 500 ? " ":"@"),i,dif1,dif1/pow(i,1.8),dif1/(pow(i,2)),dif1/(pow(i,2.2)));
+        (dif1 > 500 ? " ":"@"),i,dif1,dif1/pow(i,1.8),
+            dif1/(pow(i,2)),dif1/(pow(i,2.2)));
         
     }
 
 }void test4() {
     printf("\nSuma SubMax 2\n");
-    printf("%-15s%-15s%-15s%-15s%-15s\n","n","t(n)","t(n)/n^0.8","t(n)/n","t(n)/n*log(n)");
+    printf("%-15s%-15s%-15s%-15s%-15s\n","n","t(n)",
+        "t(n)/n^0.8","t(n)/n","t(n)/n*log(n)");
     for (int i=310000;i<=10000000;i=i*2){
         int *v=malloc(sizeof(int) * i);
         aleatorio(v,i);
         double dif2=getDif2(v,i);
         printf("%s%-15i%-15f%-15f%-15f%-15f\n",
-        (dif2 > 500 ? " ":"@"),i, dif2, dif2/pow(i,0.8), dif2 / i, dif2 / i*log(i));
+        (dif2 > 500 ? " ":"@"),i, dif2, dif2/pow(i,0.8), 
+            dif2 / i, dif2 / i*log(i));
     
         free(v);  
     }
