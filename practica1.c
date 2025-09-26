@@ -29,8 +29,8 @@ double tiempo;
 
 int main(void) {
     inicializar_semilla();
-    // test1();
-    // test2();
+    test1();
+    test2();
     test3();
     test4();
     return 0;
@@ -86,13 +86,12 @@ void test1() {
     int v4[] = {15, -2, -5, -4, 16};
     int v5[] = {7, -5, 6, 7, -7};
     int* v[] = {v0, v1, v2, v3, v4, v5};
-    int i;
-
-    //TODO Hacer que la tabla quede recta
+    int i;    
     printf("Test 1 \n");
+    printf("%-17s%-15s%-15s\n","Vector","Suma1","Suma2");
     for(i = 0; i < 6; i++) {
         imprimirVector(v[i], 5);
-        printf("    %i      %i\n", suma1(v[i], 5), suma2(v[i], 5));
+        printf("%5i%5i\n", suma1(v[i], 5), suma2(v[i], 5));
     }
 }
 
@@ -106,9 +105,11 @@ void test2() {
     aleatorio(v12,9);
     printf("\nTest 2\n");
     int* v[] = {v7, v8, v9, v10, v11, v12};
+    printf("%-35s%-10s%-10s\n","Vector","Suma1","Suma2");
+
     for(int i = 0; i < 6; i++) {
         imprimirVector(v[i], 9);
-        printf("    %i      %i\n", suma1(v[i], 9), suma2(v[i], 9));
+        printf("%-10i%-10i\n", suma1(v[i], 9), suma2(v[i], 9));
     }
 }
 
