@@ -35,6 +35,7 @@ int main(void) {
        inicializar_semilla();
        test_ins();
        test1();
+    
 }
 
 //TODO Test ordenacion por inserción (vectores desordenados, ordenados, y ordenados al revés)
@@ -171,10 +172,6 @@ static double medir_tiempo_insercion(const int origen[], int n){
             ord_ins(w, n);
         }
         t2 = microsegundos();
-
-        printf( "Tiempo t1: %.8f\n",t1);
-        printf( "Tiempo t2: %.8f\n",t2);
-        printf( "Tiempo t: %.8f\n",t);
 
         //Acabamos de medir el tiempo base del algorimto,
         //ahora hay que restarle el tiempo de copiar el vector k veces 
