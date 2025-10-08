@@ -182,7 +182,7 @@ void test3() {
         dif2=getDif2(v,i);
         printf("%s%-15i%-15f%-15f%-15f%-15f\n",
         (dif2 > 500 ? " ":"@"),i, dif2, dif2/pow(i,0.8), 
-            dif2 / i, dif2 / i*log(i));
+            dif2 / i, dif2 / (i*log(i)));
             
         free(v);  
     }
