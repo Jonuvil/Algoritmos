@@ -94,8 +94,6 @@ void test_shell() {
     }
 }
 
-//TODO REVISAR SI ESTÁ BIEN + CHECKEAR Y MARCAR ANOMALÍAS 
-
 void test_ins2() {
     int k, n, *v;
     double t;
@@ -114,9 +112,9 @@ void test_ins2() {
     pie_tabla(1000);
 
     encabezado("ORDENACION POR INSERCION (vector acendente)");
-     for (int k=0;k<NUM_N;k++){
-        int n = Ns[k];
-        int *v = (int*)malloc(n*sizeof(int));
+     for (k=0;k<NUM_N;k++){
+        n = Ns[k];
+        *v = (int*)malloc(n*sizeof(int));
         ArrAsc(v, n);
         double t = medir_tiempo_insercion(v, n);
         fila(n, t, 1, 1.1, 1.2);
@@ -125,9 +123,9 @@ void test_ins2() {
     pie_tabla(1000);
     
     encabezado("ORDENACION POR INSERCION (vector descendente)");
-     for (int k=0;k<NUM_N;k++){
-        int n = Ns[k];
-        int *v = (int*)malloc(n*sizeof(int));
+     for (k=0;k<NUM_N;k++){
+        n = Ns[k];
+        *v = (int*)malloc(n*sizeof(int));
         ArrayDesc(v, n);
         double t = medir_tiempo_insercion(v, n);
         fila(n, t, 1.8, 2.0, 2.2);
@@ -137,7 +135,7 @@ void test_ins2() {
 }
 
 
-//TODO REVISAR SI ESTÁ BIEN + CHECKEAR Y MARCAR ANOMALÍAS 
+
 void test_shell2() {
     int inc[64];
     int s, k, n, m, *v; 
@@ -355,12 +353,14 @@ static void encabezado(const char *titulo){
            "n","t(n) (us)","t(n)/n^1.1","t(n)/n^1.2","t(n)/n^1.3");
     } 
 }
+
 static void fila(int n, double t, double a1,double a2,double a3){
     printf("%10d %16.8f %16.8f %16.8f %16.8f\n",
            n, t, t/pow(n,a1), t/pow(n,a2), t/pow(n,a3));
 }
 static void pie_tabla(int K) {
-    printf("(*) Tiempo promedio de K=%d ejecuciones (corregido restando la preparación).\n", K);
+    printf("(*) Tiempo promedio de K=%d"
+    "ejecuciones (corregido restando la preparación).\n", K);
 }
 
 
