@@ -114,7 +114,7 @@ void test_ins2() {
     encabezado("ORDENACION POR INSERCION (vector acendente)");
      for (k=0;k<NUM_N;k++){
         n = Ns[k];
-        *v = (int*)malloc(n*sizeof(int));
+        v = (int*)malloc(n*sizeof(int));
         ArrAsc(v, n);
         double t = medir_tiempo_insercion(v, n);
         fila(n, t, 1, 1.1, 1.2);
@@ -125,7 +125,7 @@ void test_ins2() {
     encabezado("ORDENACION POR INSERCION (vector descendente)");
      for (k=0;k<NUM_N;k++){
         n = Ns[k];
-        *v = (int*)malloc(n*sizeof(int));
+        v = (int*)malloc(n*sizeof(int));
         ArrayDesc(v, n);
         double t = medir_tiempo_insercion(v, n);
         fila(n, t, 1.8, 2.0, 2.2);
