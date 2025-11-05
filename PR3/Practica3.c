@@ -9,7 +9,6 @@
 void ord_ins(int v[], int n);
 void ord_rapida(int v[], int n, int umbral);
 void ordenar_aux(int v[], int ini, int n, int umbral);
-void punto_medio (int v[],int ini,int n);
 void inicializar_semilla();
 void aleatorio(int v [], int n);
 void ArrAsc(int v[],int n);
@@ -21,42 +20,44 @@ static void pie_tabla(int K);
 void printVec(int v[], int n);
 void testBienOrdenado();
 void testTiempos();
-int medirTiempoOrd(int v[], int n,int umbral);
+double medirTiempoOrd(int v[], int n,int umbral);
+void testVec(int v_test[], int n, int umbral_val, bool table);
+void Mediana3 (int v[], int ini, int n);
+void intercambio(int v[], int umbral, int j);
 
 int main(void) {
-       inicializar_semilla();
-       testBienOrdenado();
-       testTiempos();
+    inicializar_semilla();
+    testBienOrdenado();
+    testTiempos();
 }
 
 void testBienOrdenado() {
-    int n = 10, n2 = 12;
-    int v_test[n]; aleatorio(v_test, n);
-    int v_test2[n2]; ArrDesc(v_test2, n2);
-    int umbral_val = 1;
-    
+    int n = 10, n2 = 12, umbral_val = 1;
+    int v_test[n], v_test2[n2];
 
-    printf("=== 2: Validacion (umbral=%d) ===\n");
-    
-    testVec(v_test, n, umbral_val,false,""); // Vector desordenado
-    testVec(v_test2, n2, umbral_val,false,""); // Vector ordenado descendente
-    testVec(v_test2, n2, umbral_val,false,""); // Vector ordnado
+    aleatorio(v_test, n);
+    ArrDesc(v_test2, n2);
 
+    printf("=== 2: Validacion (umbral=%d) ===\n", umbral_val);
+    testVec(v_test, n, umbral_val, false); // Vector desordenado
+    testVec(v_test2, n2, umbral_val, false); // Vector ordenado descendente
+    testVec(v_test2, n2, umbral_val, false); // Vector ordnado
     printf("\n");
 }
 
 void testTiempos() {
-    int k, n, *v,c,u,umbral, *vAsc, *vDesc;
+    int k, n, *v, c = 0, u, umbral;
     double t;
     static const int Ns[] = {500,1000,2000,4000,8000,16000,32000};
     static const int umbrales[] = {1,10,100};
     static const int NUM_N = sizeof(Ns)/sizeof(Ns[0]);
     int numU = sizeof(umbrales)/sizeof(umbrales[0]);
+    
     struct {
         char *nombre;
-        int (*orden)(int[], int);
-    }casos[] = {
-        {"ORDENACION QUICKSHORT ALEATORIO",aleatorio},
+        void (*orden)(int[], int);
+    } casos[] = {
+        {"ORDENACION QUICKSORT ALEATORIO",aleatorio},
         {"ORDENACION QUICKSORT ASCENDENTE",ArrAsc},
         {"ORDENACION QUICKSORT DESCENDENTE",ArrDesc},
     };
@@ -64,6 +65,7 @@ void testTiempos() {
     printf("==== 3: medicion tiempos====\n");
     for (u = 0; u <numU; u++) {
         umbral=umbrales[u];
+        printf("\n====== UMBRAL %d ======\n", umbral);
         for (c = 0; c < 3; c++) {
             encabezado(casos[c].nombre);
             for (k = 0; k < NUM_N; k++) {
@@ -82,38 +84,19 @@ void testTiempos() {
             pie_tabla(1000);
         }
     }
-        char mensaje[100];
-        /*===Aleatorio===*/
-        snprintf(mensaje, sizeof(mensaje),"Vector aleatorio con umbral %d y tamaño %d", umbral, n);
-        encabezado(mensaje);
-
-            testVec(v,n,umbral,true,mensaje);
-
-        /*===Ascendente===*/
-        snprintf(mensaje, sizeof(mensaje),"Vector Ascendente con umbral %d y tamaño %d", umbral, n);
-        encabezado(mensaje);
-            testVec(vAsc,n,umbral,true, mensaje);
-
-        /*===Descendente===*/
-        snprintf(mensaje, sizeof(mensaje),"Vector Descendente con umbral %d y tamaño %d", umbral, n);
-        encabezado(mensaje);
-            testVec(vDesc,n,umbral,true,mensaje);
-
-        free(v);
-        free(vAsc);
-        free(vDesc);
-    }
-int medirTiempoOrd(int v[], int n,int umbral){
+}
+    
+double medirTiempoOrd(int v[], int n,int umbral) {
+    double t1, t2, t, tb1, tb2;
+    int K = 1000, i;
     int *w = (int*)malloc(n*sizeof(int));
     memcpy(w, v, n*sizeof(int));
     //Inicializamos el tiempo y ejecutamos el algoritmo y 
     //medimos el tiempo utilizado
-    double t1 = microsegundos();
-    ord_ins(w, n);
-    double t2 = microsegundos();
-    double t = t2 - t1;
-    int K = 1000, i;
-    double tb1, tb2;
+    t1 = microsegundos();
+    ord_rapida(w, n, umbral);
+    t2 = microsegundos();
+    t = t2 - t1;
 
     //SI el tiempo es muy pequeño, lo medimos 1000 veces y hacemos la media
     if (t < 500.0){
@@ -138,13 +121,9 @@ int medirTiempoOrd(int v[], int n,int umbral){
     return t;
 }
 
-
-
-
-void testVec(int v_test[], int n, int umbral_val, bool table, const char *header) {
+void testVec(int v_test[], int n, int umbral_val, bool table) {
     double t_inicio, t_final, t_total;
-    printf("Vector inicial (n=%d): ", n);
-    printVec(v_test, n);
+    
     if(table){
         t_inicio = microsegundos();
         ord_rapida(v_test, n, umbral_val);
@@ -154,6 +133,8 @@ void testVec(int v_test[], int n, int umbral_val, bool table, const char *header
         
     }
     else{
+        printf("Vector inicial (n=%d): ", n);
+        printVec(v_test, n);
         ord_rapida(v_test, n, umbral_val);
         printf("Vector ordenado:\t");
         printVec(v_test, n);
@@ -202,22 +183,6 @@ void ordenar_aux(int v[], int ini, int n, int umbral) {
     }
 }
 
-
-
-
-/*========Utilidades generales=======*/
-int* tamanoAleatorio(int tipo){
-    if (tipo==0){
-        
-    }
-    else if (tipo==0){
-        
-    }
-    else if (tipo==0){
-        
-    }
-}
-
 void ArrAsc(int arr[], int n) {
     int umbral;
     for (umbral = 0; umbral < n; umbral++) {
@@ -231,6 +196,7 @@ void ArrDesc(int arr[], int n) {
         arr[umbral] = n - umbral;
     }
 }
+
 void intercambio(int v[], int umbral, int j) {
     int aux = v[umbral]; 
     v[umbral] = v[j];
@@ -272,30 +238,17 @@ double microsegundos() {
 /* ========Utilidades tabla ======== */
 static void encabezado(const char *titulo) {
     printf("\n%s:\n\n", titulo);
-    if(strcmp(titulo,"ORDENACION POR INSERCION (vector acendente)")==0)
+    if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0)
     {
         printf("%12s %17s %16s %16s %16s\n",
            "n","t(n) (us)","t(n)/n^1.0","t(n)/n^1.1","t(n)/n^1.2");
-    }
-    if (strcmp(titulo,"ORDENACION POR INSERCION (vector desordenado)")==0 ||
-        strcmp(titulo,"ORDENACION POR INSERCION (vector descendente)")==0)
-        {
+    } else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
         printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^1.8","t(n)/n^2","t(n)/n^2.2");
-    }
-    if (strcmp(titulo, "ORDENACION POR SHELL (Hibbard)")==0 ||
-        strcmp(titulo, "ORDENACION POR SHELL (Knuth)")==0){
+           "n","t(n) (us)","t(n)/n^1.0","t(n)/n^1.1","t(n)/n^1.2");
+    } else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
         printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^1.3","t(n)/n^1.5","t(n)/n^1.7");
+           "n","t(n) (us)","t(n)/n^1.0","t(n)/n^1.1","t(n)/n^1.2");
     }
-    if (strcmp(titulo, "ORDENACION POR SHELL (Sedgewick)")==0){
-        printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^1.2","t(n)/n^1.33","t(n)/n^1.5");
-    }
-    if (strcmp(titulo, "ORDENACION POR SHELL (Ciura)")==0){
-        printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^1.1","t(n)/n^1.2","t(n)/n^1.3");
-    } 
 }
 
 
