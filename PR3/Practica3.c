@@ -12,6 +12,8 @@ void ordenar_aux(int v[], int ini, int n, int umbral);
 void punto_medio (int v[],int ini,int n);
 void inicializar_semilla();
 void aleatorio(int v [], int n);
+void ArrAsc(int v[],int n);
+void ArrDesc(int v[],int n);
 double microsegundos();
 static void encabezado(const char *titulo);
 static void fila(int n, double t, double a1,double a2,double a3);
@@ -19,6 +21,7 @@ static void pie_tabla(int K);
 void printVec(int v[], int n);
 void testBienOrdenado();
 void testTiempos();
+int medirTiempoOrd(int v[], int n,int umbral);
 
 int main(void) {
        inicializar_semilla();
@@ -29,11 +32,11 @@ int main(void) {
 void testBienOrdenado() {
     int n = 10, n2 = 12;
     int v_test[n]; aleatorio(v_test, n);
-    int v_test2[n2]; ArrayDesc(v_test2, n2);
+    int v_test2[n2]; ArrDesc(v_test2, n2);
     int umbral_val = 1;
     
 
-    printf("=== 2: Validacion (umbral=%d) ===\n", umbral_val);
+    printf("=== 2: Validacion (umbral=%d) ===\n");
     
     testVec(v_test, n, umbral_val,false,""); // Vector desordenado
     testVec(v_test2, n2, umbral_val,false,""); // Vector ordenado descendente
@@ -43,47 +46,106 @@ void testBienOrdenado() {
 }
 
 void testTiempos() {
-    int min = 7;
-    int max = 15;
-    //Definimos los vectores e inicializarlos
-    //1  DE CADA
-    int n, umbral, *v, *vAsc, *vDesc;
+    int k, n, *v,c,u,umbral, *vAsc, *vDesc;
+    double t;
+    static const int Ns[] = {500,1000,2000,4000,8000,16000,32000};
+    static const int umbrales[] = {1,10,100};
+    static const int NUM_N = sizeof(Ns)/sizeof(Ns[0]);
+    int numU = sizeof(umbrales)/sizeof(umbrales[0]);
+    struct {
+        char *nombre;
+        int (*orden)(int[], int);
+    }casos[] = {
+        {"ORDENACION QUICKSHORT ALEATORIO",aleatorio},
+        {"ORDENACION QUICKSORT ASCENDENTE",ArrAsc},
+        {"ORDENACION QUICKSORT DESCENDENTE",ArrDesc},
+    };
 
-    for (umbral = 1; umbral <= 100; umbral *= 10) {
-        n = rand() % (max - min + 1) + min;
-        v = (int*)malloc(n*sizeof(int));
-        vAsc = (int*)malloc(n*sizeof(int));
-        vDesc = (int*)malloc(n*sizeof(int));
-
-        ArrAsc(vAsc, n);
-        ArrayDesc(vDesc, n);   
-
+    printf("==== 3: medicion tiempos====\n");
+    for (u = 0; u <numU; u++) {
+        umbral=umbrales[u];
+        for (c = 0; c < 3; c++) {
+            encabezado(casos[c].nombre);
+            for (k = 0; k < NUM_N; k++) {
+                n = Ns[k];
+                v = (int*)malloc(n * sizeof(int));
+                casos[c].orden(v,n);
+                t = medirTiempoOrd(v,n,umbral);
+                if(c==0 || c==1)
+                    fila(n, t, 1.3, 1.5, 1.7);
+                else if (c==2)
+                    fila(n, t, 1.2, 1.33, 1.5);
+                else
+                fila(n, t, 1.3, 1.5, 1.7);
+                free(v);
+            }
+            pie_tabla(1000);
+        }
+    }
         char mensaje[100];
+        /*===Aleatorio===*/
+        snprintf(mensaje, sizeof(mensaje),"Vector aleatorio con umbral %d y tamaño %d", umbral, n);
+        encabezado(mensaje);
 
-        snprintf(mensaje, sizeof(mensaje),
-        "Vector aleatorio con umbral %d y tamaño %d", umbral, n);
-        testVec(v,n,umbral,true,mensaje);
-        
-        snprintf(mensaje, sizeof(mensaje),
-        "Vector Ascendente con umbral %d y tamaño %d", umbral, n);
-        testVec(vAsc,n,umbral,true, mensaje);
+            testVec(v,n,umbral,true,mensaje);
 
-        snprintf(mensaje, sizeof(mensaje),
-        "Vector descendente con umbral %d y tamaño %d", umbral, n);
-        testVec(vDesc,n,umbral,true,mensaje);
+        /*===Ascendente===*/
+        snprintf(mensaje, sizeof(mensaje),"Vector Ascendente con umbral %d y tamaño %d", umbral, n);
+        encabezado(mensaje);
+            testVec(vAsc,n,umbral,true, mensaje);
+
+        /*===Descendente===*/
+        snprintf(mensaje, sizeof(mensaje),"Vector Descendente con umbral %d y tamaño %d", umbral, n);
+        encabezado(mensaje);
+            testVec(vDesc,n,umbral,true,mensaje);
 
         free(v);
         free(vAsc);
         free(vDesc);
     }
+int medirTiempoOrd(int v[], int n,int umbral){
+    int *w = (int*)malloc(n*sizeof(int));
+    memcpy(w, v, n*sizeof(int));
+    //Inicializamos el tiempo y ejecutamos el algoritmo y 
+    //medimos el tiempo utilizado
+    double t1 = microsegundos();
+    ord_ins(w, n);
+    double t2 = microsegundos();
+    double t = t2 - t1;
+    int K = 1000, i;
+    double tb1, tb2;
+
+    //SI el tiempo es muy pequeño, lo medimos 1000 veces y hacemos la media
+    if (t < 500.0){
+        t1 = microsegundos();
+        for (i=0;i<K;i++){
+            memcpy(w, v, n*sizeof(int));
+            ord_rapida(w, n,umbral);
+        }
+        t2 = microsegundos();
+        //Acabamos de medir el tiempo base del algorimto,
+        //ahora hay que restarle el tiempo de copiar el vector k veces 
+        tb1 = microsegundos();
+        for (i=0;i<K;i++){
+            memcpy(w, v, n*sizeof(int));
+        }
+        tb2 = microsegundos();
+        t = ((t2 - t1) - (tb2 - tb1)) / K;    
+        printf("(*)");
+    }
+    else(printf("   "));
+    free(w);
+    return t;
 }
+
+
+
 
 void testVec(int v_test[], int n, int umbral_val, bool table, const char *header) {
     double t_inicio, t_final, t_total;
     printf("Vector inicial (n=%d): ", n);
     printVec(v_test, n);
     if(table){
-        encabezado(header);
         t_inicio = microsegundos();
         ord_rapida(v_test, n, umbral_val);
         t_final = microsegundos();
@@ -144,6 +206,18 @@ void ordenar_aux(int v[], int ini, int n, int umbral) {
 
 
 /*========Utilidades generales=======*/
+int* tamanoAleatorio(int tipo){
+    if (tipo==0){
+        
+    }
+    else if (tipo==0){
+        
+    }
+    else if (tipo==0){
+        
+    }
+}
+
 void ArrAsc(int arr[], int n) {
     int umbral;
     for (umbral = 0; umbral < n; umbral++) {
@@ -151,7 +225,7 @@ void ArrAsc(int arr[], int n) {
     }
 }
 
-void ArrayDesc(int arr[], int n) {
+void ArrDesc(int arr[], int n) {
     int umbral;
     for (umbral = 0; umbral < n; umbral++) {
         arr[umbral] = n - umbral;
@@ -224,6 +298,7 @@ static void encabezado(const char *titulo) {
     } 
 }
 
+
 void printVec(int v[], int n) {
     int umbral;
 
@@ -237,6 +312,7 @@ static void fila(int n, double t, double a1,double a2,double a3) {
     printf("%10d %16.8f %16.8f %16.8f %16.8f\n",
            n, t, t/pow(n,a1), t/pow(n,a2), t/pow(n,a3));
 }
+
 static void pie_tabla(int K) {
     printf("(*) Tiempo promedio de K=%d"
     " ejecuciones (corregido restando la preparación).\n", K);
