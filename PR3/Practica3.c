@@ -16,13 +16,49 @@ double microsegundos();
 static void encabezado(const char *titulo);
 static void fila(int n, double t, double a1,double a2,double a3);
 static void pie_tabla(int K);
+void printVec(int v[], int n);
+void test();
 
-void ord_ins(int v[], int n){
+int main(void) {
+       inicializar_semilla();
+       test();
+}
+
+void test() {
+    int n = 10, n2 = 12;
+    int v_test[] = {5, 2, 8, 1, 9, 4, 0, 7, 3, 6};
+    int v_test2[] = {15, 13, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    int umbral_val = 1;
+    
+
+    printf("=== PUNTO 2: Validacion (umbral=%d) ===\n", umbral_val);
+    
+    testVec(v_test, n, umbral_val); // Vector desordenado
+    testVec(v_test2, n2, umbral_val); // Vector ordenado descendente
+    testVec(v_test2, n2, umbral_val); // Vector ordnado
+}
+
+void testVec(int v_test[], int n, int umbral_val) {
+    double t_inicio, t_final, t_total;
+    printf("Vector inicial (n=%d): ", n);
+    printVec(v_test, n);
+    
+    t_inicio = microsegundos();
+    ord_rapida(v_test, n, umbral_val);
+    t_final = microsegundos();
+    t_total = t_final - t_inicio;
+    
+    printf("Vector ordenado:\t");
+    printVec(v_test, n);
+    printf("\n");
+}
+
+void ord_ins(int v[], int n) {
     int i, x, j;
-    for (i=1;i<n;i++){
+    for (i=1;i<n;i++) {
         x=v[i];
         j=i-1;
-        while(j>=0 && v[j]>x){
+        while(j>=0 && v[j]>x) {
             v[j+1] = v[j] ;
             j--;
         }
@@ -32,7 +68,7 @@ void ord_ins(int v[], int n){
 
 void ord_rapida(int v[], int n, int umbral) {
     ordenar_aux(v, 0, n-1, umbral);
-    if (umbral > 1)
+    if (umbral > 1) 
         ord_ins(v, n);
 }
 
@@ -42,21 +78,18 @@ void ordenar_aux(int v[], int ini, int n, int umbral) {
         Mediana3(v, ini, n);
         
         int pivote = v[ini];
-        int i = ini;
-        int j = n;
+        int i = ini-1;
+        int j = n+1;
 
         while (j > i) {
-            while (v[i] < pivote) {
-                i++;
-            }
-            while (v[j] > pivote) {
-                j--;
-            }
+            do { i++; } while (v[i] < pivote);
+            do { j--; } while (v[j] > pivote);
+
             intercambio(v, i, j);
         }
         intercambio(v, i, j);
         intercambio(v, ini, j);
-        ordenar_aux(v, ini, j-1, umbral);
+        ordenar_aux(v, ini, j, umbral);
         ordenar_aux(v, j+1, n, umbral);
     }
 }
@@ -125,6 +158,15 @@ static void encabezado(const char *titulo) {
         printf("%12s %17s %16s %16s %16s\n",
            "n","t(n) (us)","t(n)/n^1.1","t(n)/n^1.2","t(n)/n^1.3");
     } 
+}
+
+void printVec(int v[], int n) {
+    int i;
+
+    for (i = 0; i < n; i++) {
+        printf("%i, ", v[i]);
+    }
+    printf("\n");
 }
 
 static void fila(int n, double t, double a1,double a2,double a3) {
