@@ -14,16 +14,16 @@ void aleatorio(int v [], int n);
 void ArrAsc(int v[],int n);
 void ArrDesc(int v[],int n);
 double microsegundos();
-static void encabezado(const char *titulo);
+static void encabezado(const char *titulo,int umbral);
 static void fila(int n, double t, double a1,double a2,double a3);
 static void pie_tabla(int K);
 void printVec(int v[], int n);
 void testBienOrdenado();
 void testTiempos();
 double medirTiempoOrd(int v[], int n,int umbral);
-void testVec(int v_test[], int n, int umbral_val, bool table);
+void testVec(int v_test[], int n, int umbral_val);
 void Mediana3 (int v[], int ini, int n);
-void intercambio(int v[], int umbral, int j);
+void intercambio(int v[], int i, int j);
 
 int main(void) {
     inicializar_semilla();
@@ -39,16 +39,16 @@ void testBienOrdenado() {
     ArrDesc(v_test2, n2);
 
     printf("=== 2: Validacion (umbral=%d) ===\n", umbral_val);
-    testVec(v_test, n, umbral_val, false); // Vector desordenado
-    testVec(v_test2, n2, umbral_val, false); // Vector ordenado descendente
-    testVec(v_test2, n2, umbral_val, false); // Vector ordnado
+    testVec(v_test, n, umbral_val); // Vector desordenado
+    testVec(v_test2, n2, umbral_val); // Vector ordenado descendente
+    testVec(v_test2, n2, umbral_val); // Vector ordnado
     printf("\n");
 }
 
 void testTiempos() {
     int k, n, *v, c = 0, u, umbral;
     double t;
-    static const int Ns[] = {500,1000,2000,4000,8000,16000,32000};
+    static const int Ns[] = {500,1000,2000,4000,8000,16000,32000,64000,128000,256000,512000,1024000};
     static const int umbrales[] = {1,10,100};
     static const int NUM_N = sizeof(Ns)/sizeof(Ns[0]);
     int numU = sizeof(umbrales)/sizeof(umbrales[0]);
@@ -67,18 +67,31 @@ void testTiempos() {
         umbral=umbrales[u];
         printf("\n====== UMBRAL %d ======\n", umbral);
         for (c = 0; c < 3; c++) {
-            encabezado(casos[c].nombre);
+            encabezado(casos[c].nombre,umbral);
             for (k = 0; k < NUM_N; k++) {
                 n = Ns[k];
                 v = (int*)malloc(n * sizeof(int));
                 casos[c].orden(v,n);
                 t = medirTiempoOrd(v,n,umbral);
-                if(c==0 || c==1)
-                    fila(n, t, 1.3, 1.5, 1.7);
-                else if (c==2)
-                    fila(n, t, 1.2, 1.33, 1.5);
-                else
-                fila(n, t, 1.3, 1.5, 1.7);
+                /*UMBRAL 1*/
+                if(c==0 && umbral==1){fila(n,t,(pow(n,1)),(n*log2(n)),(pow(n,1.3)));}
+                else if (c==1 && umbral==1){fila(n, t, pow(n,0.95), pow(n,1.023), pow(n,1.15));}
+                else if (c==2 && umbral==1){
+                    fila(n, t, pow(n,0.95), pow(n,1.05), pow(n,1.2));
+                }
+                /*UMBRAL 10*/
+                else if (c==0 && umbral==10){fila(n, t,pow(n,1.2), pow(n,1.25),pow(n,1.4));
+                }
+                else if (c==1 && umbral==10){
+                    fila(n, t,pow(n,1.2), pow(n,1.25),pow(n,1.4));
+                }
+                else if (c==2 && umbral==10){
+                    fila(n, t,pow(n,1.2), pow(n,1.25),pow(n,1.4));
+                }
+                /*UMBRAL 100*/
+                else{
+                    fila(n, t, n,(n*log(n)), pow(n,1.2));
+                }
                 free(v);
             }
             pie_tabla(1000);
@@ -88,7 +101,7 @@ void testTiempos() {
     
 double medirTiempoOrd(int v[], int n,int umbral) {
     double t1, t2, t, tb1, tb2;
-    int K = 1000, i;
+    int K = 5000, i;
     int *w = (int*)malloc(n*sizeof(int));
     memcpy(w, v, n*sizeof(int));
     //Inicializamos el tiempo y ejecutamos el algoritmo y 
@@ -121,25 +134,13 @@ double medirTiempoOrd(int v[], int n,int umbral) {
     return t;
 }
 
-void testVec(int v_test[], int n, int umbral_val, bool table) {
-    double t_inicio, t_final, t_total;
-    
-    if(table){
-        t_inicio = microsegundos();
-        ord_rapida(v_test, n, umbral_val);
-        t_final = microsegundos();
-        t_total = t_final - t_inicio;
-        printf("Tiempo: %.5f \n",t_total);
-        
-    }
-    else{
-        printf("Vector inicial (n=%d): ", n);
-        printVec(v_test, n);
-        ord_rapida(v_test, n, umbral_val);
-        printf("Vector ordenado:\t");
-        printVec(v_test, n);
-        printf("\n");
-    }
+void testVec(int v_test[], int n, int umbral_val) {
+    printf("Vector inicial (n=%d): ", n);
+    printVec(v_test, n);
+    ord_rapida(v_test, n, umbral_val);
+    printf("Vector ordenado:\t");
+    printVec(v_test, n);
+    printf("\n");
 }
 
 void ord_ins(int v[], int n) {
@@ -184,22 +185,22 @@ void ordenar_aux(int v[], int ini, int n, int umbral) {
 }
 
 void ArrAsc(int arr[], int n) {
-    int umbral;
-    for (umbral = 0; umbral < n; umbral++) {
-        arr[umbral] = umbral + 1;
+    int i;
+    for (i = 0; i < n; i++) {
+        arr[i] = i + 1;
     }
 }
 
 void ArrDesc(int arr[], int n) {
-    int umbral;
-    for (umbral = 0; umbral < n; umbral++) {
-        arr[umbral] = n - umbral;
+    int i;
+    for (i = 0; i < n; i++) {
+        arr[i] = n - i;
     }
 }
 
-void intercambio(int v[], int umbral, int j) {
-    int aux = v[umbral]; 
-    v[umbral] = v[j];
+void intercambio(int v[], int i, int j) {
+    int aux = v[i]; 
+    v[i] = v[j];
     v[j] = aux;
 }
 
@@ -221,9 +222,9 @@ void inicializar_semilla() {
 }
 
 void aleatorio(int v [], int n) { 
-    int umbral, m=2*n+1;
-    for (umbral=0; umbral < n; umbral++)
-        v[umbral] = (rand() % m) - n;
+    int i, m=2*n+1;
+    for (i=0; i < n; i++)
+        v[i] = (rand() % m) - n;
 }
 
 double microsegundos() {
@@ -236,34 +237,38 @@ double microsegundos() {
 }
 
 /* ========Utilidades tabla ======== */
-static void encabezado(const char *titulo) {
-    printf("\n%s:\n\n", titulo);
-    if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0)
-    {
+static void encabezado(const char *titulo,int umbral) {
+    printf("\n%s con umbral %d:\n\n", titulo,umbral);
+    if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0 && umbral==1){
+        printf("%12s %17s %16s %16s %16s\n",
+           "n","t(n) (us)","t(n)/n^1.05","t(n)/n^1.175","t(n)/n^1.3");
+    }
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
+        printf("%12s %17s %16s %16s %16s\n",
+           "n","t(n) (us)","t(n)/n^1.0","t(n)/n^1.02","t(n)/n^1.25");
+    }
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
         printf("%12s %17s %16s %16s %16s\n",
            "n","t(n) (us)","t(n)/n^1.0","t(n)/n^1.1","t(n)/n^1.2");
-    } else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
-        printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^1.0","t(n)/n^1.1","t(n)/n^1.2");
-    } else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
+    }
+    else  if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0 && umbral==10) {
         printf("%12s %17s %16s %16s %16s\n",
            "n","t(n) (us)","t(n)/n^1.0","t(n)/n^1.1","t(n)/n^1.2");
     }
 }
 
-
 void printVec(int v[], int n) {
-    int umbral;
+    int i;
 
-    for (umbral = 0; umbral < n; umbral++) {
-        printf("%i ", v[umbral]);
+    for (i = 0; i < n; i++) {
+        printf("%i ", v[i]);
     }
     printf("\n");
 }
 
 static void fila(int n, double t, double a1,double a2,double a3) {
     printf("%10d %16.8f %16.8f %16.8f %16.8f\n",
-           n, t, t/pow(n,a1), t/pow(n,a2), t/pow(n,a3));
+           n, t, t/a1, t/a2, t/a3);
 }
 
 static void pie_tabla(int K) {
