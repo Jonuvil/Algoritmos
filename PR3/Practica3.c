@@ -52,8 +52,8 @@ void testBienOrdenado() {
 void testTiempos() {
     int k, n, *v, c = 0, u, umbral;
     double t;
-    static const int Ns[] = {500,1000,2000,4000,8000,16000,32000,64000,128000,256000};
-    // static const int Ns[] = {500,1000,2000,4000,8000,16000,32000,64000,128000,256000,512000,1024000,2048000};
+    static const int Ns[] = {500,1000,2000,4000,8000,16000,32000,
+        64000,128000,256000};
     static const int umbrales[] = {1,10,100};
     static const int NUM_N = sizeof(Ns)/sizeof(Ns[0]);
     int numU = sizeof(umbrales)/sizeof(umbrales[0]);
@@ -148,12 +148,14 @@ void ord_rapida(int v[], int n, int umbral) {
 }       
 
 void ordenar_aux(int v[], int ini, int n, int umbral) {
+    int pivote, i, j;
+    
     if (ini + umbral <= n) {
         Mediana3(v, ini, n);
         
-        int pivote = v[ini];
-        int i = ini-1;
-        int j = n+1;
+        pivote = v[ini];
+        i = ini-1;
+        j = n+1;
 
         while (j > i) {
             do { i++; } while (v[i] < pivote);
@@ -213,11 +215,11 @@ void aleatorio(int v [], int n) {
 
 double microsegundos() {
     /* obtiene la hora del sistema en microsegundos */
-     struct timeval t;
-     if (gettimeofday(&t, NULL) < 0 ) {
-         return 0.0;
-     }
-     return (t.tv_usec + t.tv_sec * 1000000.0);
+    struct timeval t;
+    if (gettimeofday(&t, NULL) < 0 ) {
+        return 0.0;
+    }
+    return (t.tv_usec + t.tv_sec * 1000000.0);
 }
 
 /* ========Utilidades tabla ======== */
@@ -251,7 +253,8 @@ void encabezadoUmb1(char *titulo){
 void encabezadoUmb10(char *titulo){
     if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0){
         printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^1.05","t(n)/(n*(log2(n)^1.1))","t(n)/n^1.3");
+           "n","t(n) (us)","t(n)/n^1.05","t(n)/(n*(log2(n)^1.1))",
+           "t(n)/n^1.3");
     }
     else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
         printf("%12s %17s %16s %16s %16s\n",
@@ -266,7 +269,8 @@ void encabezadoUmb10(char *titulo){
 void encabezadoUmb100(char *titulo){
     if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0){
         printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^1.05","t(n)/(n*(log(n)^0.95))","t(n)/n^1.3");
+           "n","t(n) (us)","t(n)/n^1.05","t(n)/(n*(log(n)^0.95))",
+           "t(n)/n^1.3");
     }
     else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
         printf("%12s %17s %16s %16s %16s\n",
@@ -309,6 +313,7 @@ void controlFilas(int c,int umbral,int n,double t) {
         fila(n, t,pow(n,1.05), pow(n,1.12),pow(n,1.3));
     }    
 }
+
 void printVec(int v[], int n) {
     int i;
     for (i = 0; i < n; i++) {
