@@ -48,11 +48,10 @@ void testBienOrdenado() {
 void testTiempos() {
     int k, n, *v, c = 0, u, umbral;
     double t;
-    static const int Ns[] = {500,1000,2000,4000,8000,16000,32000,64000,128000,256000,512000,1024000};
+    static const int Ns[] = {500,1000,2000,4000,8000,16000,32000,64000,128000,256000};
     static const int umbrales[] = {1,10,100};
     static const int NUM_N = sizeof(Ns)/sizeof(Ns[0]);
     int numU = sizeof(umbrales)/sizeof(umbrales[0]);
-    
     struct {
         char *nombre;
         void (*orden)(int[], int);
@@ -61,7 +60,6 @@ void testTiempos() {
         {"ORDENACION QUICKSORT ASCENDENTE",ArrAsc},
         {"ORDENACION QUICKSORT DESCENDENTE",ArrDesc},
     };
-
     printf("==== 3: medicion tiempos====\n");
     for (u = 0; u <numU; u++) {
         umbral=umbrales[u];
@@ -74,8 +72,12 @@ void testTiempos() {
                 casos[c].orden(v,n);
                 t = medirTiempoOrd(v,n,umbral);
                 /*UMBRAL 1*/
-                if(c==0 && umbral==1){fila(n,t,(pow(n,1)),(n*log2(n)),(pow(n,1.3)));}
-                else if (c==1 && umbral==1){fila(n, t, pow(n,0.95), pow(n,1.023), pow(n,1.15));}
+                if(c==0 && umbral==1){
+                    fila(n,t,(pow(n,1)),(n*log2(n)),(pow(n,1.3)));
+                }
+                else if (c==1 && umbral==1){
+                    fila(n, t, pow(n,0.95), pow(n,1.05), pow(n,1.15));
+                }
                 else if (c==2 && umbral==1){
                     fila(n, t, pow(n,0.95), pow(n,1.05), pow(n,1.2));
                 }
@@ -89,6 +91,17 @@ void testTiempos() {
                     fila(n, t,pow(n,1.2), pow(n,1.25),pow(n,1.4));
                 }
                 /*UMBRAL 100*/
+                else if (c==0 && umbral==100){fila(n, t,pow(n,1.2), pow(n,1.25),
+                    pow(n,1.4));}
+                else if (c==1 && umbral==100){
+                    fila(n, t,pow(n,1.2), pow(n,1.25),pow(n,1.4));
+                }
+                else if (c==2 && umbral==100){
+                    fila(n, t,pow(n,1.2), pow(n,1.25),pow(n,1.4));
+                }
+
+
+
                 else{
                     fila(n, t, n,(n*log(n)), pow(n,1.2));
                 }
@@ -111,7 +124,7 @@ double medirTiempoOrd(int v[], int n,int umbral) {
     t2 = microsegundos();
     t = t2 - t1;
 
-    //SI el tiempo es muy pequeño, lo medimos 1000 veces y hacemos la media
+    //SI el tiempo es muy pequeño, lo medimos k veces y hacemos la media
     if (t < 500.0){
         t1 = microsegundos();
         for (i=0;i<K;i++){
