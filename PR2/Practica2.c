@@ -227,7 +227,6 @@ void ord_shell(int v[], int n, int inc[], int m) {
     }
 }
 
-
 void inicializar_semilla() { 
     srand(time(NULL));
 }
@@ -391,10 +390,7 @@ int build_sedgewick(int inc[], int n) {
     long h;
     if (n > 1) inc[m++] = 1;
     do {
-        if (k % 2 == 0)
-            h = (9*pow(4, k))-(9*pow(2,k)) + 1;
-        else
-            h=pow(4,k)-3*pow(2,k) + 1;
+        h=pow(4,k)-3*pow(2,k) + 1;
 
         if (h > 0 && h<n) 
             inc[m++] = (int)h;

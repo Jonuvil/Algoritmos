@@ -172,7 +172,6 @@ void test3() {
 }void test4() {
     
     double dif2;
-
     printf("\nSuma SubMax 2\n");
     printf("%-15s%-15s%-15s%-15s%-15s\n","n","t(n)",
         "t(n)/n^0.8","t(n)/n","t(n)/n*log(n)");
