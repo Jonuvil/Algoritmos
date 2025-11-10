@@ -238,46 +238,46 @@ static void encabezado(char *titulo,int umbral) {
 }
 void encabezadoUmb1(char *titulo){
     if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0){
-        printf("%12s %17s %16s %16s %16s\n",
+        printf("%12s %17s %20s %26s %15s\n",
            "n","t(n) (us)","t(n)/n^1","t(n)/(n*(log2(n)^0.9))","t(n)/n^1.3");
     }
-    else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
-        printf("%12s %17s %16s %16s %16s\n",
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
+        printf("%12s %18s %20s %21s %19s\n",
            "n","t(n) (us)","t(n)/n^0.9","t(n)/n^1.023","t(n)/n^1.2");
     }
-    else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
-        printf("%12s %17s %16s %16s %16s\n",
-           "n","t(n) (us)","t(n)/n^0.95","t(n)/n^1.","t(n)/n^1.2");
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
+        printf("%12s %18s %20s %21s %19s\n",
+           "n","t(n) (us)","t(n)/n^0.95","t(n)/n^1.06","t(n)/n^1.2");
     }
 }
 void encabezadoUmb10(char *titulo){
     if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0){
-        printf("%12s %17s %16s %16s %16s\n",
+        printf("%12s %17s %22s %25s %14s\n",
            "n","t(n) (us)","t(n)/n^1.05","t(n)/(n*(log2(n)^1.1))",
            "t(n)/n^1.3");
     }
-    else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
-        printf("%12s %17s %16s %16s %16s\n",
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
+        printf("%12s %18s %20s %21s %19s\n",
            "n","t(n) (us)","t(n)/n^0.95","t(n)/n^1.065","t(n)/n^1.2");
     }
-    else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
-        printf("%12s %17s %16s %16s %16s\n",
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
+        printf("%12s %18s %20s %21s %19s\n",
            "n","t(n) (us)","t(n)/n^0.95","t(n)/n^1.08","t(n)/n^1.2");
     }
 
 }
 void encabezadoUmb100(char *titulo){
     if(strcmp(titulo,"ORDENACION QUICKSORT ALEATORIO")==0){
-        printf("%12s %17s %16s %16s %16s\n",
+        printf("%12s %17s %22s %25s %14s\n",
            "n","t(n) (us)","t(n)/n^1.05","t(n)/(n*(log(n)^0.95))",
            "t(n)/n^1.3");
     }
-    else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
-        printf("%12s %17s %16s %16s %16s\n",
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
+        printf("%12s %18s %20s %21s %19s\n",
            "n","t(n) (us)","t(n)/n^0.95","t(n)/n^1.09","t(n)/n^1.2");
     }
-    else if(!strcmp(titulo, "ORDENACION QUICKSORT ASCENDENTE")) {
-        printf("%12s %17s %16s %16s %16s\n",
+    else if(!strcmp(titulo, "ORDENACION QUICKSORT DESCENDENTE")) {
+        printf("%12s %18s %20s %21s %19s\n",
            "n","t(n) (us)","t(n)/n^1.05","t(n)/n^1.12","t(n)/n^1.3");
     }
 }
@@ -322,7 +322,7 @@ void printVec(int v[], int n) {
     printf("\n");
 }
 static void fila(int n, double t, double a1,double a2,double a3) {
-    printf("%10d %16.8f %16.8f %16.8f %16.8f\n",
+    printf("%10d %17.8f %20.8f %20.8f %20.8f\n",
            n, t, t/a1, t/a2, t/a3);
 }
 
