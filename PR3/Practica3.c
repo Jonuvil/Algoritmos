@@ -9,10 +9,12 @@
 void ord_ins(int v[], int n);
 void ord_rapida(int v[], int n, int umbral);
 void ordenar_aux(int v[], int ini, int n, int umbral);
+
 void inicializar_semilla();
 void aleatorio(int v [], int n);
 void ArrAsc(int v[],int n);
 void ArrDesc(int v[],int n);
+
 double microsegundos();
 static void encabezado(char *titulo,int umbral);
 void encabezadoUmb1(char *titulo);
@@ -21,6 +23,7 @@ void encabezadoUmb100(char *titulo);
 static void fila(int n, double t, double a1,double a2,double a3);
 static void pie_tabla(int K);
 void printVec(int v[], int n);
+
 void testBienOrdenado();
 void testTiempos();
 double medirTiempoOrd(int v[], int n,int umbral);
