@@ -33,10 +33,11 @@ typedef int pos;
 typedef entrada *tabla_cerrada;
 // tabla_cerrada d = malloc(38197 * sizeof(entrada)); USAR EN FUNCION
 
+void inicializar_semilla();
 
-void aleatorio(int v [], int n);
-void ArrAsc(int v[],int n);
-void ArrDesc(int v[],int n);
+unsigned int resol_lineal(int pos_ini, int num_intento);
+unsigned int resol_cuadratica(int pos_ini, int num_intento);
+unsigned int resol_doble(int pos_ini, int num_intento);
 
 double microsegundos();
 static void encabezado(char *titulo,int umbral);
@@ -54,7 +55,7 @@ pnodo buscar_abierta(char *clave, tabla_abierta diccionario, int tam, int *colis
 int insertar_abierta(char *clave, char *sinonimos, tabla_abierta *diccionario, int tam,
     unsigned int (*dispersion)(char *, int));
 void mostrar_abierta(tabla_abierta diccionario, int tam);
-
+void liberar_abierta(tabla_abierta diccionario, int tam);
 
 //---Dispersion Cerrada---
 void inicializar_cerrada(tabla_cerrada *diccionario, int tam);
@@ -67,38 +68,48 @@ int insertar_cerrada(char *clave, char *sinonimos,
     unsigned int (*resol_colisiones)(int pos_ini, int num_intento));
 void mostrar_cerrada(tabla_cerrada diccionario, int tam);
 
-
-
-int main(void) {
-       testAbierto();
-       testCerrado();
-          
-}
 typedef struct {
     char clave [LONGITUD_CLAVE];
     char sinonimos [LONGITUD_SINONIMOS];
 } item;
 
+void testAbierto();
+void testCerrado();
+void realizaPruebas(item *datos_fichero);
+int leer_sinonimos(item datos[]);
+unsigned int dispersionA(char *clave, int tamTabla);
+unsigned int dispersionB(char *clave, int tamTabla);
 
+int main(void) {
+    inicializar_semilla();
+
+    item datos_fichero[19069];
+    testAbierto();
+    testCerrado();
+          
+    realizaPruebas(datos_fichero);
+}
+
+void inicializar_semilla() { 
+    srand(time(NULL));
+}
 
 void testAbierto(){
-    // tabla_abierta d = malloc(19069 * sizeof(lista));
-    const int TAM = 11;  /* tamaño pequeño para ver bien las colisiones */
-    tabla_abierta diccionario;
+    tabla_abierta d = malloc(19069 * sizeof(lista));
     int colisiones_totales = 0;
 
-    inicializar_abierta(&diccionario, TAM);
+    inicializar_abierta(&d, 19069);
 
     /* Insertamos algunas claves de prueba (como en el enunciado) */
-    colisiones_totales+=insertar_abierta("ANA",   "sinonimos de ANA",   &diccionario, TAM, ndispersion);
-    colisiones_totales+=insertar_abierta("JOSE",  "sinonimos de JOSE",  &diccionario, TAM, ndispersion);
-    colisiones_totales+=insertar_abierta("OLGA",  "sinonimos de OLGA",  &diccionario, TAM, ndispersion);
-    colisiones_totales+=insertar_abierta("ROSA",  "sinonimos de ROSA",  &diccionario, TAM, ndispersion);
-    colisiones_totales+=insertar_abierta("LUIS",  "sinonimos de LUIS",  &diccionario, TAM, ndispersion);
-    colisiones_totales+=insertar_abierta("IVAN",  "sinonimos de IVAN",  &diccionario, TAM, ndispersion);
+    colisiones_totales+=insertar_abierta("ANA",   "sinonimos de ANA",   &d, 19069, ndispersion);
+    colisiones_totales+=insertar_abierta("JOSE",  "sinonimos de JOSE",  &d, 19069, ndispersion);
+    colisiones_totales+=insertar_abierta("OLGA",  "sinonimos de OLGA",  &d, 19069, ndispersion);
+    colisiones_totales+=insertar_abierta("ROSA",  "sinonimos de ROSA",  &d, 19069, ndispersion);
+    colisiones_totales+=insertar_abierta("LUIS",  "sinonimos de LUIS",  &d, 19069, ndispersion);
+    colisiones_totales+=insertar_abierta("IVAN",  "sinonimos de IVAN",  &d, 19069, ndispersion);
 
     /* Mostrar tabla y colisiones totales */
-    mostrar_abierta(&diccionario, TAM);
+    mostrar_abierta(d, 19069);
     printf("numero total de colisiones: %d\n\n", colisiones_totales);
     printf("Llega aquí");
 
@@ -108,7 +119,7 @@ void testAbierto(){
     pnodo res;
 
     for (i = 0; i < 7; i++) {
-        res = buscar_abierta(claves[i], &diccionario, TAM, col, ndispersion);
+        res = buscar_abierta(claves[i], d, 19069, &col, ndispersion);
         if (res != NULL)
             printf("Al buscar: %s, encuentro: %s, colisiones: %d\n",
                    claves[i], res->clave, col);
@@ -116,24 +127,142 @@ void testAbierto(){
             printf("No encuentro: %s, colisiones: %d\n", claves[i], col);
     }
 
-    return 0;
+    liberar_abierta(d, 19069);
 }
 
-
-
-
-void testCerrado () {
-    tabla_cerrada d = malloc(38197 * sizeof(entrada));
-  
+void liberar_abierta(tabla_abierta diccionario, int tam) {
+    for (int i = 0; i < tam; i++) {
+        pnodo actual = diccionario[i];
+        while (actual != NULL) {
+            pnodo temp = actual;
+            actual = actual->siguiente;
+            free(temp); 
+        }
+    }
+    free(diccionario); 
 }
 
+void testCerrado() {
+    tabla_cerrada diccionario;
+    int colisiones_totales;
+    const int TAM = 11;
+    char *claves[] = {"ANA", "LUIS", "JOSE", "OLGA", "ROSA", "IVAN", "CARLOS"};
+    
+    // Punteros a funciones de resolución para iterar
+    unsigned int (*resoluciones[])(int, int) = {resol_lineal, resol_cuadratica, resol_doble};
+    char *nombres_resol[] = {"LINEAL", "CUADRATICA", "DOBLE"};
 
+    // Probamos las 3 estrategias
+    for (int k = 0; k < 3; k++) {
+        // Inicializar (malloc del tamaño pequeño)
+        diccionario = malloc(38197 * sizeof(entrada));
+        inicializar_cerrada(&diccionario, TAM);
+        colisiones_totales = 0;
 
+        printf("\n***TABLA CERRADA %s\n", nombres_resol[k]);
 
+        // Inserción (Mismos datos que testAbierto)
+        colisiones_totales += insertar_cerrada("ANA", "sin", &diccionario, TAM, ndispersion, resoluciones[k]);
+        colisiones_totales += insertar_cerrada("JOSE", "sin", &diccionario, TAM, ndispersion, resoluciones[k]);
+        colisiones_totales += insertar_cerrada("OLGA", "sin", &diccionario, TAM, ndispersion, resoluciones[k]);
+        colisiones_totales += insertar_cerrada("ROSA", "sin", &diccionario, TAM, ndispersion, resoluciones[k]);
+        colisiones_totales += insertar_cerrada("LUIS", "sin", &diccionario, TAM, ndispersion, resoluciones[k]);
+        colisiones_totales += insertar_cerrada("IVAN", "sin", &diccionario, TAM, ndispersion, resoluciones[k]);
 
+        mostrar_cerrada(diccionario, TAM);
+        printf("Numero total de colisiones al insertar los elementos: %d\n", colisiones_totales);
 
+        // Búsqueda
+        int col;
+        pos p;
+        for (int i = 0; i < 7; i++) {
+            p = buscar_cerrada(claves[i], diccionario, TAM, &col, ndispersion, resoluciones[k]);
+            if (p != -1)
+                printf("Al buscar: %s, encuentro: %s, colisiones: %d\n", claves[i], diccionario[p].clave, col);
+            else
+                printf("No encuentro: %s, colisiones: %d\n", claves[i], col);
+        }
+        
+        free(diccionario); // Limpieza
+    }
+}
 
+void realizaPruebas(item *datos_fichero) {
+    int num_entradas = leer_sinonimos(datos_fichero);
+    if (num_entradas == EXIT_FAILURE) return;
 
+    printf("\n--- INICIO PRUEBAS CON %d ELEMENTOS ---\n", num_entradas);
+
+    // --- CONFIGURACIÓN ---
+    // Punteros a las funciones de dispersión
+    unsigned int (*dispersiones[])(char*, int) = {dispersionA, dispersionB};
+    char *nombres_disp[] = {"Dispersion A", "Dispersion B"};
+    
+    // Punteros a resoluciones (solo para cerrada)
+    unsigned int (*resoluciones[])(int, int) = {resol_lineal, resol_cuadratica, resol_doble};
+    char *nombres_resol[] = {"Lineal", "Cuadratica", "Doble"};
+
+    // --- 1. PRUEBAS TABLA ABIERTA ---
+    for (int d = 0; d < 2; d++) { // Para A y B
+        printf("\n*** Tabla Abierta con %s\n", nombres_disp[d]);
+        tabla_abierta dicc;
+        dicc = malloc(TAM_ABIERTA * sizeof(lista)); // Usar malloc
+        inicializar_abierta(&dicc, TAM_ABIERTA);
+
+        int colisiones = 0;
+        for(int i=0; i<num_entradas; i++) {
+            colisiones += insertar_abierta(datos_fichero[i].clave, datos_fichero[i].sinonimos, &dicc, TAM_ABIERTA, dispersiones[d]);
+        }
+        printf("Insertando %d elementos... Numero total de colisiones: %d\n", num_entradas, colisiones);
+
+        // -- Medición de Tiempos (Punto 3 del PDF) --
+        printf("%10s %15s %15s %15s\n", "n", "t(n)", "t(n)/n", "t(n)/log(n)"); // Cabeceras simplificadas
+        
+        // Hacemos pruebas para n=1000, 2000, 4000... hasta 16000
+        for (int n = 1000; n <= 16000; n *= 2) {
+            double ta, tb, t_total;
+            int k = 10000; // Repeticiones para promediar
+            
+            ta = microsegundos();
+            for (int j = 0; j < k; j++) {
+                // Buscamos claves al azar dentro del rango cargado
+                int indice_azar = rand() % num_entradas;
+                int col_dummy;
+                buscar_abierta(datos_fichero[indice_azar].clave, dicc, TAM_ABIERTA, &col_dummy, dispersiones[d]);
+            }
+            tb = microsegundos();
+            
+            t_total = tb - ta;
+            
+            printf("%10d %15.5f\n", n, t_total); 
+            // Aquí deberías añadir las fórmulas de fila() para ver O(n) vs O(1)
+        }
+        
+        // Liberar memoria lista abierta (simplificado)
+        liberar_abierta(dicc, 19069);
+    }
+
+    // --- 2. PRUEBAS TABLA CERRADA ---
+    for (int d = 0; d < 2; d++) { // Dispersión A y B
+        for (int r = 0; r < 3; r++) { // Lineal, Cuad, Doble
+            printf("\n*** Tabla Cerrada %s con %s\n", nombres_resol[r], nombres_disp[d]);
+            
+            tabla_cerrada dicc_cerr;
+            dicc_cerr = malloc(TAM_CERRADA * sizeof(entrada));
+            inicializar_cerrada(&dicc_cerr, TAM_CERRADA);
+            
+            int colisiones = 0;
+            for(int i=0; i<num_entradas; i++) {
+                colisiones += insertar_cerrada(datos_fichero[i].clave, datos_fichero[i].sinonimos, &dicc_cerr, TAM_CERRADA, dispersiones[d], resoluciones[r]);
+            }
+            printf("Insertando %d elementos... Numero total de colisiones: %d\n", num_entradas, colisiones);
+            
+            // Aquí iría el mismo bucle de tiempos que en la abierta
+            
+            free(dicc_cerr);
+        }
+    }
+}
 
 int leer_sinonimos(item datos[]) {
     char c;
@@ -178,6 +307,7 @@ unsigned int dispersionB(char *clave, int tamTabla) {
     return valor % tamTabla; /* multipicar por 32 */
 }
 unsigned int ndispersion(char *clave, int tamTabla) {
+    (void) tamTabla;
     if (strcmp(clave, "ANA")==0) return 7;
     if (strcmp(clave, "JOSE")==0) return 7;
     if (strcmp(clave, "OLGA")==0) return 7;
@@ -187,7 +317,7 @@ unsigned int ndispersion(char *clave, int tamTabla) {
 //------Métodos dispersion abierta------
 void inicializar_abierta(tabla_abierta *dict, int tam) {
     for (int i = 0; i < tam; i++) {
-        dict[i] = NULL;
+        (*dict)[i] = NULL;
     }
 }
 
@@ -196,7 +326,7 @@ int insertar_abierta(char *clave, char *sinonimos, tabla_abierta *diccionario, i
     unsigned int pos = dispersion(clave, tam);
     int colisiones = 0;
 
-    if (diccionario[pos] != NULL) {
+    if ((*diccionario)[pos] != NULL) {
         colisiones = 1;
     }
 
@@ -204,15 +334,14 @@ int insertar_abierta(char *clave, char *sinonimos, tabla_abierta *diccionario, i
     strcpy(nuevo -> clave, clave);
     strcpy(nuevo -> sinonimos, sinonimos);
 
-    nuevo -> siguiente = diccionario[pos];
-    diccionario[pos] = nuevo;
+    nuevo -> siguiente = (*diccionario)[pos];
+    (*diccionario)[pos] = nuevo;
 
     return colisiones;
 }
 
 pnodo buscar_abierta(char *clave, tabla_abierta diccionario, int tam, int *colisiones, 
     unsigned int (*dispersion)(char *, int)) {
-        printf("LLega aqui");
         unsigned int pos = dispersion(clave, tam);
         pnodo actual = diccionario[pos];
         *colisiones=0;
@@ -226,6 +355,7 @@ pnodo buscar_abierta(char *clave, tabla_abierta diccionario, int tam, int *colis
         }
         return NULL;    
 }
+
 void mostrar_abierta(tabla_abierta diccionario, int tam) {
     int i;
     printf("***TABLA ABIERTA\n{\n");
@@ -244,10 +374,12 @@ void mostrar_abierta(tabla_abierta diccionario, int tam) {
 
 //------Dispersion Cerrada------
 unsigned int resol_lineal(int pos_ini, int num_intento) {
+    (void) pos_ini;
     return num_intento;
 }
 
 unsigned int resol_cuadratica(int pos_ini, int num_intento) {
+    (void) pos_ini;
     return num_intento * num_intento;
 }
 
@@ -285,6 +417,51 @@ int insertar_cerrada(char *clave, char *sinonimos, tabla_cerrada *diccionario, i
                 colisiones++;
             }
         }
+
+        return colisiones;
+}
+
+pos buscar_cerrada(char *clave, tabla_cerrada diccionario, int tam, int *colisiones,
+    unsigned int (*dispersion)(char *, int),
+    unsigned int (*resol_colisiones)(int pos_ini, int num_intento)) {
+
+    unsigned int pos_ini = dispersion(clave, tam);
+    unsigned int pos_act;
+    *colisiones = 0;
+
+    for (int i = 0; i < tam; i++) {
+        pos_act = (pos_ini + resol_colisiones(pos_ini, i)) % tam;
+        
+        // Si la celda está vacía, la clave no existe
+        if (diccionario[pos_act].ocupada == 0) {
+            *colisiones = i; // Colisiones hasta encontrar hueco
+            return -1; // No encontrado
+        }
+        
+        // Si la celda está ocupada, comparamos claves
+        if (strcmp(diccionario[pos_act].clave, clave) == 0) {
+            *colisiones = i; // Número de intentos realizados
+            return pos_act; // Encontrado
+        }
+        
+        // Si está ocupada y no es la clave, seguimos buscando (bucle continúa)
+    }
+    
+    *colisiones = tam; // Tabla llena y no encontrado
+    return -1;
+}
+
+void mostrar_cerrada(tabla_cerrada diccionario, int tam) {
+    printf("{\n");
+    for (int i = 0; i < tam; i++) {
+        if (diccionario[i].ocupada) {
+            printf("%d- (%s)\n", i, diccionario[i].clave);
+        } else {
+            // Descomenta la siguiente línea si quieres ver los huecos vacíos como en el PDF para tablas pequeñas
+            if (tam < 20) printf("%d-\n", i); 
+        }
+    }
+    printf("}\n");
 }
 
 
