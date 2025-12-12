@@ -254,10 +254,10 @@ void testCerrado(item *datos_fichero,int num_entradas,char *nombres_disp[], unsi
             }
             printf("Insertando %d elementos... Numero total de colisiones: %d\n", num_entradas, colisiones);
             if(d==0){
-                encabezado("a");
+                encabezado("c","a");
             }
             else if(d==1){
-                encabezado("b");
+                encabezado("c","b");
             }
             // Hacemos pruebas para n=1000, 2000, 4000... hasta 16000
             for (int n = 1000; n <= 16000; n *= 2) {
